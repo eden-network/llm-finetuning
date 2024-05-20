@@ -4,20 +4,20 @@ provider "google" {
 }
 
 locals {
-  project_id               = var.project_id  
-  location                 = "us-central1"
-  dataset_id               = "llm"
-  table_id                 = "input_outputs"
-  stats_view_id            = "stats"    
+  project_id    = var.project_id
+  location      = "us-central1"
+  dataset_id    = "llm"
+  table_id      = "input_outputs"
+  stats_view_id = "stats"
 }
 
 module "bigquery" {
-  source                   = "../../modules/bigquery"  
-  project_id               = local.project_id  
-  dataset_id               = local.dataset_id  
-  table_id                 = local.table_id
-  stats_view_id            = local.stats_view_id    
-  location                 = local.location
+  source        = "../../modules/bigquery"
+  project_id    = local.project_id
+  dataset_id    = local.dataset_id
+  table_id      = local.table_id
+  stats_view_id = local.stats_view_id
+  location      = local.location
 }
 
 output "dataset_id" {

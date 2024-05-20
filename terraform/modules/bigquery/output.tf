@@ -1,6 +1,6 @@
 output "dataset_id" {
   description = "The dataset ID for housing things relatede to local llms"
-  value = google_bigquery_dataset.llm.dataset_id
+  value       = google_bigquery_dataset.llm.dataset_id
 }
 
 output "table_id" {
