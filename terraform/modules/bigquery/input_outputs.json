@@ -1,0 +1,46 @@
+[
+    {
+        "description": "The name of the tokeniser used",
+        "mode": "REQUIRED",
+        "name": "tokenizer",
+        "type": "STRING"
+    },
+    {
+        "description": "The name of the dataset used",
+        "mode": "REQUIRED",
+        "name": "dataset",
+        "type": "STRING"
+    },
+    {
+        "description": "The array of metrics for the dataset",
+        "mode": "REPEATED",
+        "name": "values",
+        "type": "RECORD",
+        "fields": [
+            {
+                "description": "The prompt used",
+                "mode": "REQUIRED",
+                "name": "prompt",
+                "type": "STRING"
+            },
+            {
+                "description": "The output",
+                "mode": "REQUIRED",
+                "name": "output",
+                "type": "STRING"
+            },
+            {
+                "description": "The number of tokens for the input",
+                "mode": "REQUIRED",
+                "name": "input_tokens_length",
+                "type": "INTEGER"
+            },
+            {
+                "description": "The number of tokens for the output",
+                "mode": "REQUIRED",
+                "name": "output_tokens_length",
+                "type": "INTEGER"
+            }
+        ]
+    }
+]
