@@ -1,5 +1,5 @@
 import json, os
-from config import parent_dir
+from hf.config import parent_dir
 from datasets import load_dataset, load_from_disk
 
 def pull(name: str = "AlfredPros/smart-contracts-instructions", local_name: str = "smart-contracts-instructions"):
@@ -28,6 +28,11 @@ def to_jsonl(local_name: str = "smart-contracts-instructions-mod"):
         for example in dataset['train']:
             json_line = json.dumps(example)
             jsonl_writer.write(json_line + '\n')
+
+def initialize(name: str = "AlfredPros/smart-contracts-instructions", local_name: str = "smart-contracts-instructions", old_input_column: str = "instruction", old_output_column: str = "source_code"):
+    pull(name, local_name)
+    transform(local_name, old_input_column, old_output_column)
+    to_jsonl(f"{local_name}-mod")
 
 if __name__ == "__main__":
     pull()

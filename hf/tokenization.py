@@ -1,5 +1,5 @@
 import json, os
-from config import parent_dir
+from hf.config import parent_dir
 from transformers import AutoTokenizer
 
 def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-contracts-instructions-mod", prompt_template: str = "instruction_task_solution"):
@@ -23,10 +23,7 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
     with open(prompts_path, 'r') as file_prompts:
         prompts = json.load(file_prompts)
 
-    stats = {
-        "tokenizer": checkpoint,
-        "values": []
-    }
+    stats = []            
     for input in inputs:    
         prompt = prompts[prompt_template].replace("{input}", input["input"]).replace("\\n", "\n")
         input_tokens = tokenizer.tokenize(prompt)            
@@ -36,7 +33,9 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
         # encoded_outputs = tokenizer(input["output"], return_tensors="pt", truncation=True)
         # output_ids = encoded_outputs['input_ids'].to("cuda:0")
         
-        stats["values"].append({
+        stats.append({
+            "tokenizer": checkpoint,
+            "dataset": dataset,
             "prompt": prompt,
             "output": input["output"],
             "input_tokens_length" : len(input_tokens),

@@ -27,7 +27,7 @@ def write(json_data) -> bool:
             job = client.load_table_from_file(
                 json_data_io,
                 table_ref,
-                location='US',
+                location='us-central1',
                 job_config=job_config,
             )
             
