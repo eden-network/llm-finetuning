@@ -7,7 +7,7 @@ resource "google_bigquery_dataset" "llm" {
 resource "google_bigquery_table" "input_outputs" {
   dataset_id          = var.dataset_id
   table_id            = var.table_id
-  schema              = file("${path.module}/input_outputs.json")
+  schema              = file("${path.module}/input_output.json")
   depends_on          = [google_bigquery_dataset.llm]
   deletion_protection = false
 }
@@ -24,5 +24,15 @@ resource "google_bigquery_table" "stats" {
     use_legacy_sql = false
   }
   depends_on          = [google_bigquery_dataset.llm, google_bigquery_table.input_outputs]
+  deletion_protection = false
+}
+
+resource "google_bigquery_table" "tokenizer_token_limit" {
+  dataset_id = var.dataset_id
+  table_id   = "tokenizer_token_limit"
+  view {
+    query = file("${path.module}/tokenizer_token_limit.sql")    
+    use_legacy_sql = false
+  }
   deletion_protection = false
 }

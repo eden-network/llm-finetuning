@@ -7,7 +7,7 @@ locals {
   project_id    = var.project_id
   location      = "us-central1"
   dataset_id    = "llm"
-  table_id      = "input_outputs"
+  table_id      = "input_output"
   stats_view_id = "stats"
 }
 
