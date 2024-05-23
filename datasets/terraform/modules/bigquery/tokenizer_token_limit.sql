@@ -1,0 +1,3 @@
+select 'bigcode/starcoder2-3b' as tokenizer, 16384 as `limit`, 'group-query attention, sliding window attention of 4,096 tokens, training using fill-in-the-middle objective' as associated_model_notes
+union all 
+select 'meta-llama/Meta-Llama-3-8B' as tokenizer, 8000 as `limit`, 'Llama 3 is an auto-regressive language model. Both the 8 and 70B versions use Grouped-Query Attention (GQA) for improved inference scalability.' as associated_model_notes

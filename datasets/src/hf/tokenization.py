@@ -2,6 +2,9 @@ import json, os
 from hf.config import parent_dir
 from transformers import AutoTokenizer
 
+access_token = os.getenv('HUGGINGFACE_TOKEN')
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-contracts-instructions-mod", prompt_template: str = "instruction_task_solution"):
     tokenizer = AutoTokenizer.from_pretrained(
             checkpoint,
@@ -10,7 +13,7 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
             use_fast=False,
             tokenizer_type=None,
             trust_remote_code=False,
-            use_auth_token=False,
+            use_auth_token=access_token
         )
 
     inputs = []

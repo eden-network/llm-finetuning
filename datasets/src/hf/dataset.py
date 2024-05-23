@@ -2,8 +2,8 @@ import json, os
 from hf.config import parent_dir
 from datasets import load_dataset, load_from_disk
 
-def pull(name: str = "AlfredPros/smart-contracts-instructions", local_name: str = "smart-contracts-instructions"):
-    dataset = load_dataset(name)
+def pull(name: str = "AlfredPros/smart-contracts-instructions", local_name: str = "smart-contracts-instructions", data_files: str | None = None):
+    dataset = load_dataset(name, data_files)
     save_path = os.path.join(parent_dir, f"../data/{local_name}")
     dataset.save_to_disk(save_path)
 
