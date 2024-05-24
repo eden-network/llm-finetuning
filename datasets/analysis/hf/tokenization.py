@@ -1,13 +1,14 @@
-import json, os
+import json, os, logging
 from hf.config import parent_dir
 from transformers import AutoTokenizer
 
 access_token = os.getenv('HUGGINGFACE_TOKEN')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-contracts-instructions-mod", prompt_template: str = "instruction_task_solution"):
+def get_stats(dataset_jsonl, prompt_template, tokenizer):
+    logging.info(f"getting stats for dataset {dataset_jsonl} with tokenizer {tokenizer}...")
     tokenizer = AutoTokenizer.from_pretrained(
-            checkpoint,
+            tokenizer,
             cache_dir=None,
             padding_side="right",
             use_fast=False,
@@ -17,7 +18,7 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
         )
 
     inputs = []
-    dataset_path = os.path.join(parent_dir, f"../data/{dataset}.jsonl")
+    dataset_path = os.path.join(parent_dir, f"../data/{dataset_jsonl}")
     with open(dataset_path, 'r') as file_inputs:
         for line in file_inputs:
             inputs.append(json.loads(line))
@@ -26,7 +27,7 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
     with open(prompts_path, 'r') as file_prompts:
         prompts = json.load(file_prompts)
 
-    stats = []            
+    stats = []           
     for input in inputs:    
         prompt = prompts[prompt_template].replace("{input}", input["input"]).replace("\\n", "\n")
         input_tokens = tokenizer.tokenize(prompt)            
@@ -37,8 +38,8 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
         # output_ids = encoded_outputs['input_ids'].to("cuda:0")
         
         stats.append({
-            "tokenizer": checkpoint,
-            "dataset": dataset,
+            "tokenizer": tokenizer.name_or_path,
+            "dataset": dataset_jsonl,
             "prompt": prompt,
             "output": input["output"],
             "input_tokens_length" : len(input_tokens),
@@ -46,7 +47,3 @@ def get_stats(checkpoint: str = "bigcode/starcoder2-3b", dataset: str = "smart-c
         })
     
     return stats
-
-if __name__ == "__main__":
-    stats = get_stats()
-    print(stats)    

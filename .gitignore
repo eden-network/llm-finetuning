@@ -311,5 +311,5 @@ terraform.rc
 
 # Custom ignores
 
-datasets/src/data/*
-!datasets/src/data/prompts.json
+datasets/analysis/data/*
+!datasets/analysis/data/prompts.json
