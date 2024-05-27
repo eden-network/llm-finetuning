@@ -23,14 +23,14 @@ def get_stats(dataset_jsonl, prompt_template, tokenizer):
         for line in file_inputs:
             inputs.append(json.loads(line))
 
-    prompts_path = os.path.join(parent_dir, f"../data/prompts.json")
+    prompts_path = os.path.join(parent_dir, f"../data/prompt_templates.json")
     with open(prompts_path, 'r') as file_prompts:
         prompts = json.load(file_prompts)
 
     stats = []           
     for input in inputs:    
         prompt = prompts[prompt_template].replace("{input}", input["input"]).replace("\\n", "\n")
-        input_tokens = tokenizer.tokenize(prompt)            
+        input_tokens = tokenizer.tokenize(prompt)
         output_tokens = tokenizer.tokenize(input["output"])            
         # encoded_inputs = tokenizer(prompt, return_tensors="pt", truncation=True)
         # input_ids = encoded_inputs['input_ids'].to("cuda:0")

@@ -1,0 +1,9 @@
+{    
+    "alpaca": {"instruction": "...", "input": "...", "output": "..."},
+    "jeopardy": {"question": "...", "category": "...", "answer": "..."},
+    "oasst": {"INSTRUCTION": "...", "RESPONSE": "..."},
+    "gpteacher": {"instruction": "...", "input": "...", "response": "..."},
+    "reflection": {"instruction": "...", "input": "...", "output": "...", "reflection": "...", "corrected": "..."},
+    "explainchoice": {"question": "...", "choices": ["..."], "solution": "...", "explanation": "..."},
+    "concisechoice": {"question": "...", "choices": ["..."], "solution": "...", "explanation": "..."}    
+}

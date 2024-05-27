@@ -1,4 +1,4 @@
-import asyncio, argparse, os, logging
+import asyncio, argparse, os, logging, json
 from dotenv import load_dotenv
 from statistics import mean
 from tabulate import tabulate
@@ -12,14 +12,6 @@ logging.basicConfig(level=logging.getLevelName(logging_level))
 from hf.tokenization import get_stats
 from hf.dataset import process
 from bigquery.writer import async_write
-
-async def async_execute(hf_dataset: str, old_input_column: str, old_output_column: str, tokenizer: str, prompt_template: str, write_to_bq: bool):
-    logging.info(f"calculating token limit stats for hf_dataset: {hf_dataset}; with tokenizer: {tokenizer}; prompt_template: {prompt_template}; write_to_bq: {write_to_bq}")
-    jsonl_filename = process(hf_dataset, old_input_column, old_output_column)
-    stats = get_stats(jsonl_filename, prompt_template, tokenizer)
-    print_stats(stats, tokenizer, jsonl_filename, prompt_template)
-    if write_to_bq:
-        await async_write(stats)
 
 def print_stats(stats, tokenizer, dataset, prompt_template):
     logging.info("................................      stats        ..........................................\n")
@@ -51,16 +43,25 @@ def print_stats(stats, tokenizer, dataset, prompt_template):
     
     print(tabulate(rows, headers, tablefmt="grid"))
 
+async def async_execute(hf_dataset: str, tokenizer: str, target_dataset_format: str, column_mappings: dict,  prompt_template: str, write_to_bq: bool):
+    logging.info(f"calculating token limit stats for hf_dataset: {hf_dataset}; with tokenizer: {tokenizer}; prompt_template: {prompt_template}; write_to_bq: {write_to_bq}")
+    jsonl_filename = process(hf_dataset, target_dataset_format, column_mappings)
+    stats = get_stats(jsonl_filename, prompt_template, tokenizer)
+    print_stats(stats, tokenizer, jsonl_filename, prompt_template)
+    if write_to_bq:
+        await async_write(stats)
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Process dataset and write stats to BigQuery.')
     parser.add_argument('--hf_dataset', type=str, required=True, help='Name of the dataset to pull from Hugging Face')
-    parser.add_argument('--old_input_column', type=str, required=True, help='The name of the input column in the dataset you want to process. This will be changed to "input" in the new dataset.')
-    parser.add_argument('--old_output_column', type=str, required=True, help='The name of the output column in the dataset you want to process. This will be changed to "output" in the new dataset.')
-    parser.add_argument('--tokenizer', type=str, required=True, help='Tokenizer to use for calculating token limits. This should be a Hugging Face model checkpoint name.')    
-    parser.add_argument('--prompt_template', type=str, help='The prompt template to use in get_stats. This needs to be available in the prompts.json file and note that {{input}} will be replaced with the input from the dataset')
-    parser.add_argument('--write_to_bq', action='store_true', help='Write the stats to BigQuery? Default is False.')
+    parser.add_argument('--tokenizer', type=str, required=True, help='Tokenizer to use for calculating token limits. This should be a Hugging Face model checkpoint name')
+    parser.add_argument('--target_dataset_format', type=str, required=True, help='The target dataset format to use for transformation')
+    parser.add_argument('--column_mappings', type=str, required=True, help='JSON string representing the old column mappings')        
+    parser.add_argument('--prompt_template', type=str, help='The prompt template to use in get_stats. The value passed in will be used to look up the prompt in the prompt_templates.json file')
+    parser.add_argument('--write_to_bq', action='store_true', help='Write the stats to BigQuery? Default is False')
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_arguments()
-    asyncio.run(async_execute(args.hf_dataset, args.old_input_column, args.old_output_column, args.tokenizer, args.prompt_template, args.write_to_bq))
+    column_mappings = json.loads(args.column_mappings)
+    asyncio.run(async_execute(args.hf_dataset, args.tokenizer, args.target_dataset_format, column_mappings, args.prompt_template, args.write_to_bq))
